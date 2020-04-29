@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types/string.hpp"
 #include "algo/convert.hpp"
+#include "types/string.hpp"
 
 namespace qsts {
 
@@ -9,17 +9,30 @@ namespace qsts {
 // be moved to an external repo.
 namespace external_types {
 
+template <typename node_type>
 class node {
-    enum class type { Variable, Constant, BinaryOperation };
+public:
+    node(node_type t);
 
-    type type_;
+private:
+    node_type t_;
 };
 
-class v_node : public node {};
+namespace node_type {
+    struct variable {
+        std::string s_;
+    };
 
-class c_node : public node {};
+    struct constant {
+        double d_;
+    };
 
-class b_o_node : public node {};
+    struct binary_operation {
+        node<binary_operation>* left;
+        node<binary_operation>* right;
+    };
+}
+
 
 class expression {};
 
