@@ -3,26 +3,27 @@
 #include <algorithm>
 #include <iostream>
 #include <stack>
-#include <string>
+
+#include "io/expression.hpp"
+#include "types/string.hpp"
 
 namespace qsts {
 
-using infix = std::string;
-using postfix = std::string;
-
 int priority(const char& op) {
-    if(op == '(') return -1;
-    if(op == '^') return 0;
+    if (op == '(') return -1;
+    if (op == '^') return 0;
     if (op == '-' || op == '+') return 1;
     if (op == '*' || op == '/') return 2;
     return 3;
 }
 
+//! convert infix to postfix
 postfix convert(const infix& ifx) {
     std::stack<char> s;
-    postfix pfx;
 
-    for (const char& t : ifx) {
+    std::string ifx_string = ifx.value(), pfx;
+
+    for (const char& t : ifx_string) {
         // ignore spaces
         if (t == ' ') continue;
 
@@ -32,7 +33,7 @@ postfix convert(const infix& ifx) {
             pfx.push_back(t);
             continue;
         }
-        
+
         // push to stack if left paraen.
         if (t == '(') {
             s.push(t);
@@ -40,18 +41,18 @@ postfix convert(const infix& ifx) {
         }
 
         // if we encounter a right paraen.
-        if(t == ')') {
+        if (t == ')') {
             // pop off until we get to a left paraen.
-            while(s.top() != '(') {
+            while (s.top() != '(') {
                 pfx.push_back(s.top());
                 s.pop();
             }
             s.pop();
             continue;
         }
-        
+
         // if it an operator
-        while(!s.empty() && priority(s.top()) >= priority(t)) {
+        while (!s.empty() && priority(s.top()) >= priority(t)) {
             pfx.push_back(s.top());
             s.pop();
         }
@@ -63,7 +64,12 @@ postfix convert(const infix& ifx) {
         s.pop();
     }
 
-    return pfx;
+    return postfix(pfx);
+}
+
+//! convert postfix to expression
+external_types::expression convert(const postfix& pfx) {
+    return external_types::expression();
 }
 
 }  // namespace qsts
