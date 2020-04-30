@@ -19,5 +19,6 @@ TEST(convert, infix_to_postfix) {
 TEST(convert, postfix_to_expression) {
     auto pf1 = qsts::postfix("ABCD/+*");
     auto ex1 = qsts::convert(pf1);
+    ex1.print();
 }
 

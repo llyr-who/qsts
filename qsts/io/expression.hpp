@@ -19,12 +19,14 @@ enum class node_type { variable, constant, binary_operation };
 class node {
 public:
     virtual node_type type() = 0;
+    virtual void print() = 0;
 };
 
 class variable : public node {
 public:
     variable(const char& v) : v_(v){};
     node_type type() { return node_type::variable; }
+    void print() { std::cout << v_ << std::endl; }
 
 private:
     char v_;
@@ -34,6 +36,7 @@ class constant : public node {
 public:
     constant(const char& c) : c_(c){};
     node_type type() { return node_type::variable; }
+    void print() { std::cout << c_ << std::endl; }
 
 private:
     int c_;
@@ -45,6 +48,11 @@ public:
                      std::shared_ptr<node> r)
         : op_(op), left_(l), right_(r){};
     node_type type() { return node_type::variable; }
+    void print() {
+        std::cout << op_ << std::endl;
+        if (left_) left_->print();
+        if (right_) right_->print();
+    }
 
 private:
     char op_;
@@ -71,8 +79,13 @@ std::shared_ptr<node> make_node(const char& t,
     return std::make_shared<binary_operation>(t, lhs, rhs);
 }
 
-class expression {
-    std::unique_ptr<node> root_;
+struct expression {
+    std::shared_ptr<node> root_;
+    void print() {
+        if (root_) {
+            root_->print();
+        }
+    }
 };
 
 }  // namespace external_types

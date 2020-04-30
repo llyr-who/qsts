@@ -69,7 +69,25 @@ postfix convert(const infix& ifx) {
 
 //! convert postfix to expression
 external_types::expression convert(const postfix& pfx) {
-    return external_types::expression();
+    external_types::expression e;
+    std::stack<std::shared_ptr<external_types::node>> s;
+    auto pfx_string = pfx.value();
+
+    for (const char& c : pfx_string) {
+        if (std::isalnum(c)) {
+            // variable or constant
+            s.push(external_types::make_node(c));
+            continue;
+        }
+        // else get the last two things on the stack
+        auto op1 = s.top();
+        s.pop();
+        auto op2 = s.top();
+        s.pop();
+        s.push(external_types::make_node(c, op1, op2));
+        e.root_ = s.top();
+    }
+    return e;
 }
 
 }  // namespace qsts
