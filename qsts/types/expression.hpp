@@ -1,6 +1,6 @@
 #pragma once
 
-#include "io/state.hpp"
+#include "types/state.hpp"
 #include "types/string.hpp"
 
 #include <cstdlib>
@@ -10,10 +10,6 @@
 #include <type_traits>
 
 namespace qsts {
-
-// everything in this namespace needs to
-// be moved to an external repo.
-namespace external {
 
 enum class node_type { variable, constant, binary_operation };
 
@@ -65,8 +61,6 @@ private:
 };
 
 //! factory for node generation
-//! we will be iterating over strings
-//! so the first argument is a const char&
 std::shared_ptr<node> make_node(const char& t,
                                 std::shared_ptr<node> lhs = nullptr,
                                 std::shared_ptr<node> rhs = nullptr) {
@@ -91,19 +85,5 @@ struct expression {
         }
     }
 };
-
-}  // namespace external
-
-// forward declaration
-postfix convert(const infix&);
-external::expression convert(const postfix&);
-
-// factory for expression generation.
-external::expression expression(const infix& ifx) {
-    // convert infix to postfix
-    auto pfx = convert(ifx);
-    // convert postfix to expression and return
-    return convert(pfx);
-}
 
 }  // namespace qsts

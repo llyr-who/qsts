@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stack>
 
-#include "io/expression.hpp"
+#include "types/expression.hpp"
 #include "types/string.hpp"
 
 namespace qsts {
@@ -68,15 +68,15 @@ postfix convert(const infix& ifx) {
 }
 
 //! convert postfix to expression
-external::expression convert(const postfix& pfx) {
-    external::expression e;
-    std::stack<std::shared_ptr<external::node>> s;
+expression convert(const postfix& pfx) {
+    expression e;
+    std::stack<std::shared_ptr<node>> s;
     auto pfx_string = pfx.value();
 
     for (const char& c : pfx_string) {
         if (std::isalnum(c)) {
             // variable or constant
-            s.push(external::make_node(c));
+            s.push(make_node(c));
             continue;
         }
         // else get the last two things on the stack
@@ -84,7 +84,7 @@ external::expression convert(const postfix& pfx) {
         s.pop();
         auto op2 = s.top();
         s.pop();
-        s.push(external::make_node(c, op1, op2));
+        s.push(make_node(c, op1, op2));
         e.root_ = s.top();
     }
     return e;

@@ -1,3 +1,3 @@
 # qsts 
 
-`qsts` specialises in parsing arithmetic expressioins and calculating derivatives via automatic differentiation.
+`qsts` specialises in parsing arithmetic expressions and calculating derivatives via automatic differentiation.

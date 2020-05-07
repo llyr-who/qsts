@@ -1,5 +1,5 @@
-#include "algo/convert.hpp"
-#include "io/state.hpp"
+#include "io/algo/convert.hpp"
+#include "types/state.hpp"
 
 #include "gtest/gtest.h"
 
@@ -18,7 +18,7 @@ TEST(convert, infix_to_postfix) {
 }
 
 TEST(convert, postfix_to_expression) {
-    qsts::external::state state = {{'A', 3}, {'B', 3}, {'C', 4}, {'D', 4}};
+    qsts::state state = {{'A', 3}, {'B', 3}, {'C', 4}, {'D', 4}};
     auto pf1 = qsts::postfix("ABCD/+*");
     auto ex1 = qsts::convert(pf1);
     ASSERT_EQ(12.0, ex1.eval(state));

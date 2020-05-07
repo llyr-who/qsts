@@ -1,2 +1,3 @@
-add_subdirectory(algo)
+add_subdirectory(types)
+#add_subdirectory(autodiff)
 add_subdirectory(io)
