@@ -85,7 +85,7 @@ expression convert(const postfix& pfx) {
         auto op2 = s.top();
         s.pop();
         s.push(make_node(c, op1, op2));
-        e.root_ = s.top();
+        e.expression_ = s.top();
     }
     return e;
 }

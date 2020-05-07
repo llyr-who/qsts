@@ -8,6 +8,7 @@
 #include <memory>
 #include <stdexcept>
 #include <type_traits>
+#include <vector>
 
 namespace qsts {
 
@@ -46,12 +47,10 @@ public:
         : op_(op), left_(l), right_(r){};
     node_type type() { return node_type::variable; }
     double eval(const state& s) {
-        double rval;
-        if (op_ == '+') rval = left_->eval(s) + right_->eval(s);
-        if (op_ == '*') rval = left_->eval(s) * right_->eval(s);
-        if (op_ == '/') rval = right_->eval(s) / left_->eval(s);
-        std::cout << rval << std::endl;
-        return rval;
+        if (op_ == '+') return left_->eval(s) + right_->eval(s);
+        if (op_ == '*') return left_->eval(s) * right_->eval(s);
+        if (op_ == '/') return right_->eval(s) / left_->eval(s);
+        return 0;
     }
 
 private:
@@ -78,10 +77,13 @@ std::shared_ptr<node> make_node(const char& t,
 }
 
 struct expression {
-    std::shared_ptr<node> root_;
+    // variables
+    std::vector<std::shared_ptr<variable>> vs_;
+    // expression (root node of graph)
+    std::shared_ptr<node> expression_;
     double eval(const state& s) {
-        if (root_) {
-            root_->eval(s);
+        if (expression_) {
+            expression_->eval(s);
         }
     }
 };
