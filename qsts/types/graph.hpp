@@ -12,6 +12,8 @@
 
 namespace qsts {
 
+namespace exp {
+
 enum class node_type { variable, constant, binary_operation };
 
 class node {
@@ -76,7 +78,7 @@ std::shared_ptr<node> make_node(const char& t,
     return std::make_shared<binary_operation>(t, lhs, rhs);
 }
 
-struct expression {
+struct graph {
     // variables
     std::vector<std::shared_ptr<variable>> vs_;
     // expression (root node of graph)
@@ -87,5 +89,5 @@ struct expression {
         }
     }
 };
-
+}  // namespace exp
 }  // namespace qsts
