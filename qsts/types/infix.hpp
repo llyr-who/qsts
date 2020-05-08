@@ -7,30 +7,25 @@
 namespace qsts {
 namespace exp {
 
-class infix {
-public:
-    infix(std::string s) : tokenise(s){};
-    std::string as_string();
-    bool operator==(const nfix& nf) const {
-        return nf.as_string() == *this.as_string();
-    }
-
-private:
-    std::list<token> tokenise(std::string s);
-
-    std::list<token> tks_;
+namespace type_rule {
+struct infix {
+    // add "valid" method to check validity
 };
+}  // namespace type_rule
 
-void infix::tokenise(std::string s) {
-    // remove spaces
+using infix = token_container<type_rule::infix>;
+
+infix convert(std::string s) {
+    std::list<token> ts;
     s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
     size_t pos = 0;
     std::string t;
     while ((pos = s.find_first_of("+-/*()")) != std::string::npos) {
-        tks_.push_back(token(s.substr(0, pos)));
-        tks_.push_back(token(s[pos]);
+        ts.push_back(token(s.substr(0, pos)));
+        ts.push_back(token(s[pos]);
         s.erase(0,pos+1);
     }
+    return infix(std::move(ts));
 }
 
 }  // namespace exp
