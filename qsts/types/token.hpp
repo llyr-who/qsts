@@ -20,7 +20,13 @@ class token_container {
 public:
     explicit token_container(std::list<token>&& tks) : tks_(std::move(tks)) {}
     const std::list<token>& tokens() { return tks_; }
-
+    std::string as_string() const {
+        std::string ts;
+        for(const auto& t : tks_) {
+            ts+=t;
+        }
+        return ts;
+    }
 private:
     std::list<token> tks_;
 };

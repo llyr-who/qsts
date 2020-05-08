@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types/state.hpp"
-#include "types/string.hpp"
 
 #include <cstdlib>
 #include <iostream>

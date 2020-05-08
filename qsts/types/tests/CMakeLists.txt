@@ -1,7 +1,7 @@
-add_executable(expression_test expression_test.cpp)
-target_link_libraries(expression_test
+add_executable(graph_test graph_test.cpp)
+target_link_libraries(graph_test
                       gtest_main
 )
 
-add_test(NAME expression_test COMMAND expression_test)
+add_test(NAME graph_test COMMAND graph_test)
 
