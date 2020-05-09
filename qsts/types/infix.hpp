@@ -1,8 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <list>
 
-#include "qsts/types/token.hpp"
+#include "types/token.hpp"
 
 namespace qsts {
 namespace exp {
@@ -22,8 +23,8 @@ infix convert(std::string s) {
     std::string t;
     while ((pos = s.find_first_of("+-/*()")) != std::string::npos) {
         ts.push_back(token(s.substr(0, pos)));
-        ts.push_back(token(s[pos]);
-        s.erase(0,pos+1);
+        ts.push_back(token(s[pos]));
+        s.erase(0, pos + 1);
     }
     return infix(std::move(ts));
 }

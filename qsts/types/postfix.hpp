@@ -13,14 +13,6 @@ struct postfix {};
 
 using postfix = token_container<type_rule::postfix>;
 
-int priority(const char& op) {
-    if (op == '(') return -1;
-    if (op == '^') return 0;
-    if (op == '-' || op == '+') return 1;
-    if (op == '*' || op == '/') return 2;
-    return 3;
-}
-
 //! convert infix to postfix
 postfix convert(const infix& ifx) {
     std::stack<char> s;
@@ -29,7 +21,7 @@ postfix convert(const infix& ifx) {
     for (const char& t : ts) {
         // if t is a number or a variable, push
         // to the string.
-        if (std::isalnum(t)) {
+        if (t.type() != token::token_type::binary_operation) {
             pfx.push_back(t);
             continue;
         }
