@@ -26,6 +26,9 @@ infix convert(std::string s) {
         ts.push_back(token(s[pos]));
         s.erase(0, pos + 1);
     }
+    if(s.size() > 0) {
+        ts.push_back(token(s));
+    }
     return infix(std::move(ts));
 }
 

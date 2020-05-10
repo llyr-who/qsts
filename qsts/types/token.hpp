@@ -18,6 +18,11 @@ public:
     token(char c) : s_(std::string(1, c)), t_(set_type()) {}
     token(const char* c_s) : s_(c_s), t_(set_type()) {}
 
+    bool operator==(const token& t) {
+        // type would have been set in cstr
+        return s_ == t.s_;
+    }
+
     const std::string& as_string() const { return s_; }
 
     token_type type() const { return t_; }
@@ -51,6 +56,7 @@ template <typename T>
 class token_container {
 public:
     explicit token_container(std::list<token>&& tks) : tks_(std::move(tks)) {}
+
     const std::list<token>& tokens() { return tks_; }
     std::string as_string() const {
         std::string ts;
