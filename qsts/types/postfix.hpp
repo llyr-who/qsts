@@ -1,8 +1,8 @@
 #pragma once
 
-#include <list>
+#include "types/infix.hpp"
 
-#include "qsts/types/infix.hpp"
+#include <stack>
 
 namespace qsts {
 namespace exp {
@@ -14,11 +14,11 @@ struct postfix {};
 using postfix = token_container<type_rule::postfix>;
 
 //! convert infix to postfix
-postfix convert(const infix& ifx) {
-    std::stack<char> s;
+postfix as_postfix(const infix& ifx) {
+    std::stack<token> s;
     auto ts = ifx.tokens();
     std::list<token> pfx;
-    for (const char& t : ts) {
+    for (const auto& t : ts) {
         // if t is a number or a variable, push
         // to the string.
         if (t.type() != token::token_type::binary_operation) {
@@ -27,15 +27,15 @@ postfix convert(const infix& ifx) {
         }
 
         // push to stack if left paraen.
-        if (t == '(') {
+        if (t == ops_map.at('(')) {
             s.push(t);
             continue;
         }
 
         // if we encounter a right paraen.
-        if (t == ')') {
+        if (t == ops_map.at(')')) {
             // pop off until we get to a left paraen.
-            while (s.top() != '(') {
+            while (s.top() != ops_map.at('(')) {
                 pfx.push_back(s.top());
                 s.pop();
             }
@@ -44,7 +44,7 @@ postfix convert(const infix& ifx) {
         }
 
         // if it an operator
-        while (!s.empty() && priority(s.top()) >= priority(t)) {
+        while (!s.empty() && (s.top()).priority() >= t.priority()) {
             pfx.push_back(s.top());
             s.pop();
         }
@@ -58,7 +58,11 @@ postfix convert(const infix& ifx) {
 
     return postfix(std::move(pfx));
 }
+
+postfix as_postfix(const std::string s) {
+    return as_postfix(as_infix(s));
+}
+
 }  // namespace exp
 
-}  // namespace qsts
 }  // namespace qsts

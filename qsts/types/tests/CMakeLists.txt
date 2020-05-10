@@ -10,6 +10,12 @@ target_link_libraries(infix_test
 )
 add_test(NAME infix_test COMMAND infix_test)
 
+add_executable(postfix_test postfix_test.cpp)
+target_link_libraries(postfix_test
+                      gtest_main
+)
+add_test(NAME postfix_test COMMAND postfix_test)
+
 add_executable(token_test token_test.cpp)
 target_link_libraries(token_test
                       gtest_main

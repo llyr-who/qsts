@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types/state.hpp"
+#include "types/postfix.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -10,7 +11,6 @@
 #include <vector>
 
 namespace qsts {
-
 namespace exp {
 
 enum class node_type { variable, constant, binary_operation };
@@ -88,5 +88,7 @@ struct graph {
         }
     }
 };
+
+
 }  // namespace exp
 }  // namespace qsts
