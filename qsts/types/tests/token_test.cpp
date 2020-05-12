@@ -20,6 +20,5 @@ TEST(token, basic) {
     std::string s = "10.0 + e-f * 123.9";
     auto tks  = exp::tokenise(s);
     ASSERT_EQ(tks.size(), 7);
-    ASSERT_NE(std::find(tks.begin(), tks.end(), exp::token("10.0")), tks.end());
 }
 

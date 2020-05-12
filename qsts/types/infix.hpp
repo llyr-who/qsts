@@ -13,7 +13,7 @@ struct infix {
 
 using infix = token_container<type_rule::infix>;
 
-infix as_infix(const std::string& s) {
+infix string_to_infix(const std::string& s) {
     std::string str = s;
     return infix(std::move(tokenise(str)));
 }
