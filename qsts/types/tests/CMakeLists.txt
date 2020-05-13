@@ -1,7 +1,13 @@
-add_executable(expression_test expression_test.cpp)
-target_link_libraries(expression_test
-                      gtest_main
-)
+set(_tests
+    graph_test
+    infix_test
+    postfix_test
+    token_test
+    state_test)
 
-add_test(NAME expression_test COMMAND expression_test)
 
+foreach(_test IN LISTS _tests)
+  add_executable(${_test} ${_test}.cpp)
+  target_link_libraries(${_test} gtest_main)
+  add_test(NAME ${_test} COMMAND ${_test})
+endforeach()
