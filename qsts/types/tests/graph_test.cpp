@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <typeinfo>
 
-using namespace qsts::exp;
+using namespace qsts;
 
 TEST(graph, make_node_type) {
     std::string apb = "A+B";

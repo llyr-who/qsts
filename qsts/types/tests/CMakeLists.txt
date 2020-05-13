@@ -1,24 +1,13 @@
-add_executable(graph_test graph_test.cpp)
-target_link_libraries(graph_test
-                      gtest_main
-)
-add_test(NAME graph_test COMMAND graph_test)
+set(_tests
+    graph_test
+    infix_test
+    postfix_test
+    token_test
+    state_test)
 
-add_executable(infix_test infix_test.cpp)
-target_link_libraries(infix_test
-                      gtest_main
-)
-add_test(NAME infix_test COMMAND infix_test)
 
-add_executable(postfix_test postfix_test.cpp)
-target_link_libraries(postfix_test
-                      gtest_main
-)
-add_test(NAME postfix_test COMMAND postfix_test)
-
-add_executable(token_test token_test.cpp)
-target_link_libraries(token_test
-                      gtest_main
-)
-add_test(NAME token_test COMMAND token_test)
-
+foreach(_test IN LISTS _tests)
+  add_executable(${_test} ${_test}.cpp)
+  target_link_libraries(${_test} gtest_main)
+  add_test(NAME ${_test} COMMAND ${_test})
+endforeach()

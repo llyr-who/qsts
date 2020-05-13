@@ -11,7 +11,6 @@
 #include <iostream>
 
 namespace qsts {
-namespace exp {
 
 const std::string ops("(^-+*/)");
 const std::map<std::string, int> priority_map = {{"(", -1}, {"^", 0}, {"-", 1},
@@ -29,6 +28,7 @@ public:
     bool operator==(const token& t) const { return s_ == t.s_; }
     bool operator!=(const token& t) const { return s_ != t.s_; }
 
+    double as_double() { return d_; }
     const std::string& as_string() const { return s_; }
 
     token_type type() const { return t_; }
@@ -40,8 +40,12 @@ public:
         return priority_map.at(s_);
     }
 
+    // ... stretching the notion of token.
     bool set_left_child(std::shared_ptr<token>&& lc) { left_ = lc; }
     bool set_right_child(std::shared_ptr<token>&& rc) { right_ = rc; }
+
+    const std::shared_ptr<token>& left() { return left_; }
+    const std::shared_ptr<token>& right() { return right_; }
 
 private:
     token_type set_type() {
@@ -107,5 +111,4 @@ auto tokenise(std::string s) {
     return std::move(ts);
 }
 
-}  // namespace exp
 }  // namespace qsts

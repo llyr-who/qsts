@@ -3,7 +3,6 @@
 #include "types/token.hpp"
 
 namespace qsts {
-namespace exp {
 
 namespace type_rule {
 struct infix {
@@ -18,5 +17,4 @@ infix string_to_infix(const std::string& s) {
     return infix(std::move(tokenise(str)));
 }
 
-}  // namespace exp
 }  // namespace qsts

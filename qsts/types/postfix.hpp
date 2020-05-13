@@ -5,7 +5,6 @@
 #include <stack>
 
 namespace qsts {
-namespace exp {
 
 namespace type_rule {
 struct postfix {};
@@ -62,7 +61,5 @@ postfix infix_to_postfix(infix&& ifx) {
 postfix string_to_postfix(const std::string& s) {
     return infix_to_postfix(string_to_infix(s));
 }
-
-}  // namespace exp
 
 }  // namespace qsts

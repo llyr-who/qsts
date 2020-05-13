@@ -8,13 +8,8 @@
 #include <iostream>
 
 namespace qsts {
-namespace exp {
 
-namespace type_rule {
-struct graph {};
-}  // namespace type_rule
-
-using graph = token_container<type_rule::graph>;
+using graph = std::shared_ptr<token>;
 
 //! convert postfix to expression
 graph postfix_to_graph(postfix&& pfx) {
@@ -38,13 +33,7 @@ graph postfix_to_graph(postfix&& pfx) {
         // push it back on the stack
         s.push(t);
     }
-    // the top of the stack is now the root.
-    // put this at the end.
-    pfx_tokens.push_back(s.top());
-    return graph(std::move(pfx_tokens));
+    return s.top();
 }
 
-
-
-}  // namespace exp
 }  // namespace qsts
