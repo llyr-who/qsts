@@ -1,4 +1,4 @@
-#include "types/infix.hpp"
+#include "core/infix.hpp"
 
 #include "gtest/gtest.h"
 

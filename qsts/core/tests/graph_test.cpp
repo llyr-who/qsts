@@ -1,5 +1,5 @@
-#include "types/graph.hpp"
-#include "types/postfix.hpp"
+#include "core/graph.hpp"
+#include "core/postfix.hpp"
 
 #include "gtest/gtest.h"
 

@@ -1,4 +1,4 @@
-#include "types/token.hpp"
+#include "core/token.hpp"
 
 #include "gtest/gtest.h"
 

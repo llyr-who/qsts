@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "types/token.hpp"
+#include "core/token.hpp"
 
 namespace qsts {
 

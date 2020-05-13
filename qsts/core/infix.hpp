@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types/token.hpp"
+#include "core/token.hpp"
 
 namespace qsts {
 
