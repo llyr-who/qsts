@@ -1,4 +1,4 @@
-#include "types/token.hpp"
+#include "io/token.hpp"
 
 #include "gtest/gtest.h"
 
@@ -17,8 +17,5 @@ TEST(token, basic) {
     ASSERT_NE(t2.type(), token::token_type::constant);
     ASSERT_EQ(t2.type(), token::token_type::binary_operation);
 
-    std::string s = "10.0 + e-f * 123.9";
-    auto tks  = tokenise(s);
-    ASSERT_EQ(tks.size(), 7);
 }
 

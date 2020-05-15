@@ -1,6 +1,6 @@
 #pragma once
 
-#include "qsts/types/nfix.hpp"
+#include "qsts/io/nfix.hpp"
 
 namespace qsts {
 

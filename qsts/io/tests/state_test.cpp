@@ -1,5 +1,5 @@
-#include "types/state.hpp"
-#include "types/graph.hpp"
+#include "io/state.hpp"
+#include "io/graph.hpp"
 
 #include "gtest/gtest.h"
 
