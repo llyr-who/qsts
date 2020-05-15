@@ -1,8 +1,8 @@
 #pragma once
 
-#include "core/postfix.hpp"
-#include "core/state.hpp"
-#include "core/token.hpp"
+#include "io/postfix.hpp"
+#include "io/state.hpp"
+#include "io/token.hpp"
 
 #include <cstdlib>
 #include <iostream>

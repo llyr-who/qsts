@@ -5,6 +5,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <string>
 
@@ -25,6 +26,7 @@ public:
     token(char c) : s_(std::string(1, c)), t_(set_type()) {}
     token(const char* c_s) : s_(c_s), t_(set_type()) {}
 
+    bool operator<(const token& t) const { return s_ < t.s_; }
     bool operator==(const token& t) const { return s_ == t.s_; }
     bool operator!=(const token& t) const { return s_ != t.s_; }
 
@@ -77,12 +79,23 @@ const std::map<char, token> ops_map = {{'(', token('(')}, {'+', token('+')},
 template <typename T>
 class token_container {
 public:
-    explicit token_container(std::list<std::shared_ptr<token>>&& tks)
-        : tks_(std::move(tks)) {}
+    token_container() = default;
+
+    void add_token(std::shared_ptr<token> t) {
+        auto to_be_added = t;
+        if(t->type() == token::token_type::variable) {
+            auto it = unique_tks_.insert(t);
+            if(!it.second) {
+                to_be_added = *it.first;
+            }
+        }
+        tks_.push_back(to_be_added);
+    }
 
     std::list<std::shared_ptr<token>>&& move_tokens() {
         return std::move(tks_);
     }
+
     std::string as_string() const {
         std::string ts;
         for (const auto& t : tks_) {
@@ -90,25 +103,16 @@ public:
         }
         return ts;
     }
-
+    
 private:
+    struct token_pointer_cmp {
+        bool operator()(const std::shared_ptr<token>& a,
+                        const std::shared_ptr<token>& b) const {
+            return *a < *b;
+        }
+    };
+    std::set<std::shared_ptr<token>, token_pointer_cmp> unique_tks_;
     std::list<std::shared_ptr<token>> tks_;
 };
-
-auto tokenise(std::string s) {
-    std::list<std::shared_ptr<token>> ts;
-    s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
-    size_t pos = 0;
-    std::string t;
-    while ((pos = s.find_first_of("+-/*()")) != std::string::npos) {
-        ts.push_back(std::make_shared<token>(s.substr(0, pos)));
-        ts.push_back(std::make_shared<token>(s[pos]));
-        s.erase(0, pos + 1);
-    }
-    if (s.size() > 0) {
-        ts.push_back(std::make_shared<token>(s));
-    }
-    return std::move(ts);
-}
 
 }  // namespace qsts

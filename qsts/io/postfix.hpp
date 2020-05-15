@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/infix.hpp"
+#include "io/infix.hpp"
 
 #include <stack>
 
@@ -16,12 +16,12 @@ using postfix = token_container<type_rule::postfix>;
 postfix infix_to_postfix(infix&& ifx) {
     std::stack<std::shared_ptr<token>> s;
     auto ts = ifx.move_tokens();
-    std::list<std::shared_ptr<token>> pfx;
+    postfix pfx;
     for (const auto& t : ts) {
         // if t is a number or a variable, push
         // to the string.
         if (t->type() != token::token_type::binary_operation) {
-            pfx.push_back(t);
+            pfx.add_token(t);
             continue;
         }
 
@@ -35,7 +35,7 @@ postfix infix_to_postfix(infix&& ifx) {
         if (*t == ops_map.at(')')) {
             // pop off until we get to a left paraen.
             while (*s.top() != ops_map.at('(')) {
-                pfx.push_back(s.top());
+                pfx.add_token(s.top());
                 s.pop();
             }
             s.pop();
@@ -44,18 +44,18 @@ postfix infix_to_postfix(infix&& ifx) {
 
         // if it an operator
         while (!s.empty() && (s.top())->priority() >= t->priority()) {
-            pfx.push_back(s.top());
+            pfx.add_token(s.top());
             s.pop();
         }
         s.push(t);
     }
 
     while (!s.empty()) {
-        pfx.push_back(s.top());
+        pfx.add_token(s.top());
         s.pop();
     }
 
-    return postfix(std::move(pfx));
+    return pfx;
 }
 
 postfix string_to_postfix(const std::string& s) {
