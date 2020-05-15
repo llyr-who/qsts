@@ -11,9 +11,18 @@
 
 using namespace qsts;
 
-TEST(graph, make_node_type) {
+TEST(graph, basic) {
+    std::string apb = "A+A+A";
+    auto g = to_graph(to_postfix(apb));
+    /* auto A = g;
+     while(A->left() != nullptr) {
+         A = A->left();
+     }
+     ASSERT_EQ(A->to_string(), "A");
+     ASSERT_EQ(A->parents().size(), 3);
+ */
     std::string apb = "A+B";
-    auto g = postfix_to_graph(string_to_postfix(apb));
-
+    qsts::state s0 = {{"A", 1.0}, {"B", 1.0}};
+    auto g0 = to_graph(to_postfix(apb));
+    ASSERT_EQ(g0[s0], 2.0);
 }
-

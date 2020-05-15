@@ -12,7 +12,7 @@ struct infix {
 
 using infix = token_container<type_rule::infix>;
 
-infix string_to_infix(std::string s) {
+infix to_infix(std::string s) {
     infix ifx;
     s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
     size_t pos = 0;
