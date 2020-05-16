@@ -24,9 +24,9 @@ public:
     token(char c) : s_(std::string(1, c)), t_(set_type()) {}
     token(const char* c_s) : s_(c_s), t_(set_type()) {}
 
-    token(const token& t) : s_(t.s_), d_(t.d_), t_(t.t_) {}
+    token(const token& t) : s_(t.s_), t_(t.t_) {}
     token(token&& t)
-        : s_(std::move(t.s_)), d_(std::move(t.d_)), t_(std::move(t.t_)) {}
+        : s_(std::move(t.s_)), t_(std::move(t.t_)) {}
 
     bool operator<(const token& t) const { return s_ < t.s_; }
     bool operator==(const token& t) const { return s_ == t.s_; }
