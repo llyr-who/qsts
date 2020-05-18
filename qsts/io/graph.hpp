@@ -35,8 +35,8 @@ public:
     }
     void add_parent(const std::shared_ptr<node>& p) { parents_.push_back(p); }
 
-    bool set_left_child(std::shared_ptr<node>&& lc) { left_ = lc; }
-    bool set_right_child(std::shared_ptr<node>&& rc) { right_ = rc; }
+    bool set_left_child(std::shared_ptr<node>& lc) { left_ = lc; }
+    bool set_right_child(std::shared_ptr<node>& rc) { right_ = rc; }
 
     const std::vector<std::shared_ptr<node>>& parents() { return parents_; }
     const std::shared_ptr<node>& left() { return left_; }
@@ -87,13 +87,17 @@ private:
 
 class graph_generator {
 public:
-    void push(std::shared_ptr<node> n) {
-        auto it = unique_node_.insert(n);
-        if (!it.second) {
-            // i.e the node already exists;
-            s_.push(*it.first);
-            return;
-        }
+    void push(const std::shared_ptr<node>& n) {
+        /*
+        if (n->type() != token::token_type::binary_operation) {
+            auto it = unique_node_.insert(n);
+            if (!it.second) {
+                // i.e the node already exists;
+                s_.push(*it.first);
+                return;
+            }
+            s_.push(n);
+        }*/
         s_.push(n);
     }
 
@@ -126,16 +130,20 @@ private:
 
 //! convert postfix to expression
 graph to_graph(postfix&& pfx) {
+    std::cout << pfx.to_string() << std::endl;
     auto pfx_tokens = pfx.move_tokens();
     std::list<std::shared_ptr<node>> nodes;
     // move the tokens into nodes
     for (const auto& t : pfx_tokens) {
+        std::cout << t->to_string() << std::endl;
         nodes.push_back(std::make_shared<node>(std::move(*t)));
     }
-
+    for (const auto& n : nodes) {
+        std::cout << "node: " << n->to_string() << std::endl;
+    }
     // now we have a graph generator which is essentially
     // a wrapped stack
-    graph_generator s;
+    std::stack<std::shared_ptr<node>> s;
     for (auto& n : nodes) {
         if (n->type() != token::token_type::binary_operation) {
             // variable or constant
@@ -149,8 +157,8 @@ graph to_graph(postfix&& pfx) {
 
         op1->add_parent(n);
         op2->add_parent(n);
-        n->set_left_child(std::move(op1));
-        n->set_right_child(std::move(op2));
+        n->set_left_child(op1);
+        n->set_right_child(op2);
         s.push(n);
     }
     return graph(s.top());

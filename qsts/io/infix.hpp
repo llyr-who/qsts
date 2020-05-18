@@ -25,6 +25,7 @@ infix to_infix(std::string s) {
     if (s.size() > 0) {
         ifx.add_token(std::make_shared<token>(s));
     }
+    std::cout<<ifx.to_string() << std::endl;
     return ifx;
 }
 
