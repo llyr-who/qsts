@@ -25,8 +25,7 @@ public:
     token(const char* c_s) : s_(c_s), t_(set_type()) {}
 
     token(const token& t) : s_(t.s_), t_(t.t_) {}
-    token(token&& t)
-        : s_(std::move(t.s_)), t_(std::move(t.t_)) {}
+    token(token&& t) : s_(std::move(t.s_)), t_(std::move(t.t_)) {}
 
     bool operator<(const token& t) const { return s_ < t.s_; }
     bool operator==(const token& t) const { return s_ == t.s_; }
@@ -69,7 +68,10 @@ class token_container {
 public:
     token_container() = default;
 
-    void add_token(std::shared_ptr<token> t) { tks_.push_back(t); }
+    void add_token(std::shared_ptr<token> t) {
+        if (t->to_string() == "") return;
+        tks_.push_back(t);
+    }
 
     std::list<std::shared_ptr<token>>&& move_tokens() {
         return std::move(tks_);

@@ -88,16 +88,12 @@ private:
 class graph_generator {
 public:
     void push(const std::shared_ptr<node>& n) {
-        /*
-        if (n->type() != token::token_type::binary_operation) {
-            auto it = unique_node_.insert(n);
-            if (!it.second) {
-                // i.e the node already exists;
-                s_.push(*it.first);
-                return;
-            }
-            s_.push(n);
-        }*/
+        auto it = unique_node_.insert(n);
+        if (!it.second) {
+            // i.e the node already exists;
+            s_.push(*it.first);
+            return;
+        }
         s_.push(n);
     }
 
@@ -143,7 +139,7 @@ graph to_graph(postfix&& pfx) {
     }
     // now we have a graph generator which is essentially
     // a wrapped stack
-    std::stack<std::shared_ptr<node>> s;
+    graph_generator s;
     for (auto& n : nodes) {
         if (n->type() != token::token_type::binary_operation) {
             // variable or constant
