@@ -16,6 +16,11 @@ namespace qsts {
 class node {
 public:
     explicit node(token t) : t_(std::move(t)){};
+    explicit node(token t, token l, token r)
+        : t_(std::move(t)),
+          left_(std::make_shared<node>(l)),
+          right_(std::make_shared<node>(r)) {}
+
     node() = delete;
 
     bool operator<(const node& n) const {
@@ -23,7 +28,7 @@ public:
             n.right_ == nullptr) {
             // i.e if this node and the other are NOT
             // operations. More specifically they are
-            // varianble or constant nodes.
+            // variable or constant nodes.
             return t_.to_string() < n.t_.to_string();
         }
         return (t_.to_string() < n.t_.to_string() ||
@@ -33,6 +38,16 @@ public:
                  left_->t_.to_string() == n.left_->t_.to_string() &&
                  right_->t_.to_string() < n.right_->t_.to_string()));
     }
+    
+    //! Checks that nodes have the same data.
+    //! This does not mean they are the SAME node.
+    bool operator==(const node& n) {
+        if (t_ == n.t_ && left_->t_ == n.left_->t_ &&
+            right_->t_ == n.right_->t_)
+            return true;
+        return false;
+    }
+
     void add_parent(const std::shared_ptr<node>& p) { parents_.push_back(p); }
 
     bool set_left_child(std::shared_ptr<node>& lc) { left_ = lc; }
@@ -85,7 +100,7 @@ private:
     std::vector<std::shared_ptr<node>> parents_;
 };
 
-class graph_generator {
+class unique_stack {
 public:
     void push(const std::shared_ptr<node>& n) {
         auto it = unique_node_.insert(n);
@@ -113,12 +128,14 @@ private:
 
 class graph {
 public:
-    graph(std::shared_ptr<qsts::node> n) : head_(n) {}
+    graph(std::shared_ptr<qsts::node>&& n) : head_(n) {}
     double operator[](const state& s) { return head_->eval(s); }
     void print() {
         std::cout << head_ << std::endl;
         head_->print();
     }
+
+    std::shared_ptr<node> get() { return head_; }
 
 private:
     std::shared_ptr<node> head_;
@@ -126,20 +143,15 @@ private:
 
 //! convert postfix to expression
 graph to_graph(postfix&& pfx) {
-    std::cout << pfx.to_string() << std::endl;
     auto pfx_tokens = pfx.move_tokens();
     std::list<std::shared_ptr<node>> nodes;
     // move the tokens into nodes
     for (const auto& t : pfx_tokens) {
-        std::cout << t->to_string() << std::endl;
         nodes.push_back(std::make_shared<node>(std::move(*t)));
-    }
-    for (const auto& n : nodes) {
-        std::cout << "node: " << n->to_string() << std::endl;
     }
     // now we have a graph generator which is essentially
     // a wrapped stack
-    graph_generator s;
+    unique_stack s;
     for (auto& n : nodes) {
         if (n->type() != token::token_type::binary_operation) {
             // variable or constant
@@ -157,7 +169,7 @@ graph to_graph(postfix&& pfx) {
         n->set_right_child(op2);
         s.push(n);
     }
-    return graph(s.top());
+    return graph(std::move(s.top()));
 }
 
 }  // namespace qsts
