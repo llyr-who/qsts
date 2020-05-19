@@ -13,7 +13,7 @@ struct postfix {};
 using postfix = token_container<type_rule::postfix>;
 
 //! convert infix to postfix
-postfix infix_to_postfix(infix&& ifx) {
+postfix to_postfix(infix&& ifx) {
     std::stack<std::shared_ptr<token>> s;
     auto ts = ifx.move_tokens();
     postfix pfx;
@@ -58,8 +58,8 @@ postfix infix_to_postfix(infix&& ifx) {
     return pfx;
 }
 
-postfix string_to_postfix(const std::string& s) {
-    return infix_to_postfix(string_to_infix(s));
+postfix to_postfix(const std::string& s) {
+    return to_postfix(to_infix(s));
 }
 
 }  // namespace qsts

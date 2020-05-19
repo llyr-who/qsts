@@ -4,11 +4,11 @@
 
 TEST(to_postfix, postfix) {
     std::string exp_str1("AB*CD/+");
-    auto pf1 = qsts::string_to_postfix("A*B+C/D");
-    ASSERT_EQ(pf1.as_string(), exp_str1);
+    auto pf1 = qsts::to_postfix("A*B+C/D");
+    ASSERT_EQ(pf1.to_string(), exp_str1);
 
     std::cout << "---- DEBUG" << std::endl;
-    auto pf2 = qsts::string_to_postfix("A+A+A");
+    auto pf2 = qsts::to_postfix("A+A+A");
     auto pf2_tokens = pf2.move_tokens();
 
     auto A = pf2_tokens.front();
