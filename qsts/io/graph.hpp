@@ -21,6 +21,10 @@ public:
           left_(std::make_shared<node>(l)),
           right_(std::make_shared<node>(r)) {}
 
+    explicit node(node&& n)
+        : t_(std::move(n.t_)),
+          left_(std::move(n.left_)),
+          right_(std::move(n.right_)) {}
     node() = delete;
 
     bool operator<(const node& n) const {
@@ -38,7 +42,7 @@ public:
                  left_->t_.to_string() == n.left_->t_.to_string() &&
                  right_->t_.to_string() < n.right_->t_.to_string()));
     }
-    
+
     //! Checks that nodes have the same data.
     //! This does not mean they are the SAME node.
     bool operator==(const node& n) {
@@ -135,13 +139,14 @@ public:
         head_->print();
     }
 
-    std::shared_ptr<node> get() { return head_; }
+    std::shared_ptr<node>&& get() { return std::move(head_); }
 
 private:
     std::shared_ptr<node> head_;
 };
 
 //! convert postfix to expression
+template <typename node>
 graph to_graph(postfix&& pfx) {
     auto pfx_tokens = pfx.move_tokens();
     std::list<std::shared_ptr<node>> nodes;
