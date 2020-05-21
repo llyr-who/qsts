@@ -12,7 +12,35 @@
 
 namespace qsts {
 
-//! Absorbs token to form a graph node
+template <typename T>
+class unique_stack {
+public:
+    void push(const std::shared_ptr<T>& n) {
+        auto it = uniques_.insert(n);
+        if (!it.second) {
+            // i.e the node already exists;
+            s_.push(*it.first);
+            return;
+        }
+        s_.push(n);
+    }
+
+    void pop() { s_.pop(); }
+    std::shared_ptr<T>& top() { s_.top(); }
+
+private:
+    struct cmp {
+        bool operator()(const std::shared_ptr<T>& a,
+                        const std::shared_ptr<T>& b) {
+            return *a < *b;
+        }
+    };
+    std::set<std::shared_ptr<T>, cmp> uniques_;
+    std::stack<std::shared_ptr<T>> s_;
+};
+
+namespace base {
+//! Absorbs token to form a expression node
 class node {
 public:
     explicit node(token t) : t_(std::move(t)){};
@@ -54,8 +82,8 @@ public:
 
     void add_parent(const std::shared_ptr<node>& p) { parents_.push_back(p); }
 
-    bool set_left_child(std::shared_ptr<node>& lc) { left_ = lc; }
-    bool set_right_child(std::shared_ptr<node>& rc) { right_ = rc; }
+    bool set_left_child(std::shared_ptr<node> lc) { left_ = lc; }
+    bool set_right_child(std::shared_ptr<node> rc) { right_ = rc; }
 
     const std::vector<std::shared_ptr<node>>& parents() { return parents_; }
     const std::shared_ptr<node>& left() { return left_; }
@@ -104,77 +132,49 @@ private:
     std::vector<std::shared_ptr<node>> parents_;
 };
 
-class unique_stack {
+template <typename NODE>
+class expression {
 public:
-    void push(const std::shared_ptr<node>& n) {
-        auto it = unique_node_.insert(n);
-        if (!it.second) {
-            // i.e the node already exists;
-            s_.push(*it.first);
-            return;
-        }
-        s_.push(n);
-    }
-
-    void pop() { s_.pop(); }
-    std::shared_ptr<node>& top() { s_.top(); }
-
-private:
-    struct cmp {
-        bool operator()(const std::shared_ptr<node>& a,
-                        const std::shared_ptr<node>& b) {
-            return *a < *b;
-        }
-    };
-    std::set<std::shared_ptr<node>, cmp> unique_node_;
-    std::stack<std::shared_ptr<node>> s_;
-};
-
-class graph {
-public:
-    graph(std::shared_ptr<qsts::node>&& n) : head_(n) {}
+    expression(postfix&& pfx) : head_(init(std::move(pfx))) {}
     double operator[](const state& s) { return head_->eval(s); }
     void print() {
         std::cout << head_ << std::endl;
         head_->print();
     }
-
-    std::shared_ptr<node>&& get() { return std::move(head_); }
+    
+    std::shared_ptr<NODE> get() { return head_; }
 
 private:
-    std::shared_ptr<node> head_;
-};
-
-//! convert postfix to expression
-template <typename node>
-graph to_graph(postfix&& pfx) {
-    auto pfx_tokens = pfx.move_tokens();
-    std::list<std::shared_ptr<node>> nodes;
-    // move the tokens into nodes
-    for (const auto& t : pfx_tokens) {
-        nodes.push_back(std::make_shared<node>(std::move(*t)));
-    }
-    // now we have a graph generator which is essentially
-    // a wrapped stack
-    unique_stack s;
-    for (auto& n : nodes) {
-        if (n->type() != token::token_type::binary_operation) {
-            // variable or constant
-            s.push(n);
-            continue;
+    auto init(postfix&& pfx) {
+        auto pfx_tokens = pfx.move_tokens();
+        std::list<std::shared_ptr<NODE>> nodes;
+        // move the tokens into nodes
+        for (const auto& t : pfx_tokens) {
+            nodes.push_back(std::make_shared<NODE>(std::move(*t)));
         }
-        auto op1 = s.top();
-        s.pop();
-        auto op2 = s.top();
-        s.pop();
+        unique_stack<NODE> s;
+        for (auto& n : nodes) {
+            if (n->type() != token::token_type::binary_operation) {
+                // variable or constant
+                s.push(n);
+                continue;
+            }
+            auto op1 = s.top();
+            s.pop();
+            auto op2 = s.top();
+            s.pop();
 
-        op1->add_parent(n);
-        op2->add_parent(n);
-        n->set_left_child(op1);
-        n->set_right_child(op2);
-        s.push(n);
+            op1->add_parent(n);
+            op2->add_parent(n);
+            n->set_left_child(op1);
+            n->set_right_child(op2);
+            s.push(n);
+        }
+        return std::move(s.top());
     }
-    return graph(std::move(s.top()));
-}
+
+    std::shared_ptr<NODE> head_;
+};
+}  // namespace base
 
 }  // namespace qsts

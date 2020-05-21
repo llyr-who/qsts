@@ -1,46 +1,32 @@
 #pragma once
 
-#include "io/graph.hpp"
+#include "io/expression.hpp"
 #include "io/postfix.hpp"
 #include "io/state.hpp"
 
 namespace qsts {
 
 namespace rad {
-class node : public qsts::node {
+class node : public qsts::base::node {
 public:
-    explicit node(qsts::token t) : qsts::node(t), grad_(0), value_(0) {}
-    void grad(const qsts::state& s) {
-
-    }
+    explicit node(token t) : qsts::base::node(t), value_(0), grad_(0) {}
+    void grad(const state& s) {}
     double value_;
     double grad_;
 };
 
-class expression {
-public:
-    explicit expression(qsts::graph&& g) : g_(std::move(g)){};
-    //
-    void forward_pass(const state& s);
+//! The idea here is that you generate a base expression
+//! given a type of node then inherit from it to extend
+//! functionality
 
-private:
-    std::shared_ptr<node>&& get() {
-        return std::move(std::static_pointer_cast<node>(g_.get()));
-    }
-    qsts::graph g_;
+class expression : public qsts::base::expression<node> {
+public:
+    expression(postfix&& pfx) : qsts::base::expression<node>(std::move(pfx)){};
+    expression(std::string s)
+        : qsts::base::expression<node>(std::move(to_postfix(s))){};
+    auto grad() { return 0.0; }
 };
 
 }  // namespace rad
-
-rad::expression expression(std::string s) {
-    return rad::expression(to_graph<rad::node>(std::move(to_postfix(s))));
-}
-
-double grad(rad::expression e, const state& s) {
-    e.forward_pass();
-    e.backward_pass();
-
-    return 0;
-}
 
 }  // namespace qsts

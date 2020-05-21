@@ -1,4 +1,4 @@
-#include "io/graph.hpp"
+#include "io/expression.hpp"
 #include "io/postfix.hpp"
 
 #include "gtest/gtest.h"
@@ -10,10 +10,11 @@
 #include <typeinfo>
 
 using namespace qsts;
+using namespace base;
 
-TEST(graph, eval) {
+TEST(expression, eval) {
     std::string e1 = "(A+B)+A*(A+B)";
-    auto g0 = to_graph<node>(to_postfix(e1));
+    auto g0 = base::expression<node>(std::move(to_postfix(e1)));
     qsts::state s0 = {{"A", 2.0}, {"B", 1.0}};
     qsts::state s1 = {{"A", 2.0}, {"B", 2.0}};
     qsts::state s2 = {{"A", 2.0}, {"B", 0.0}};
@@ -47,10 +48,10 @@ auto unique_tester(const std::shared_ptr<node>& head) {
     return nodes;
 }
 
-TEST(graph, unique) {
+TEST(expression, unique) {
     std::string e1 = "(A+B)+A*(A+B)";
-    auto g0 = to_graph<node>(to_postfix(e1));
-    // gets the shared pointer of the head of the graph
+    auto g0 = base::expression<node>(to_postfix(e1));
+    // gets the shared pointer of the head of the expression
     auto nodes = unique_tester(g0.get());
     node a_plus_b = node(token("+"), token("A"), token("B"));
     for (const auto& n : nodes) {

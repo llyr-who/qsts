@@ -1,5 +1,5 @@
 set(_tests
-    graph_test
+    expression_test
     infix_test
     postfix_test
     token_test
