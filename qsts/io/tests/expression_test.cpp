@@ -12,6 +12,22 @@
 using namespace qsts;
 using namespace base;
 
+/* while unique_stack is in expression.hpp, we test in here*/
+
+TEST(unique_stack, basic) {
+	unique_stack<node> s;
+	s.push(std::make_shared<node>(token("A")));
+	auto uis = s.unique_items();
+	std::list<std::shared_ptr<node>> l;
+
+	for (auto n : uis) {
+		l.push_back(n);
+	}
+
+	ASSERT_EQ(l.size(), 1);
+
+}
+
 TEST(expression, eval) {
     std::string e1 = "(A+B)+A*(A+B)";
     auto g0 = base::expression<node>(std::move(to_postfix(e1)));

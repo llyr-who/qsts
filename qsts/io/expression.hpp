@@ -4,6 +4,7 @@
 #include "io/state.hpp"
 #include "io/token.hpp"
 
+#include <array>
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -15,6 +16,13 @@ namespace qsts {
 template <typename T>
 class unique_stack {
 public:
+	struct cmp {
+		bool operator()(const std::shared_ptr<T>& a,
+			const std::shared_ptr<T>& b) const {
+			return *a < *b;
+		}
+	};
+
     void push(const std::shared_ptr<T>& n) {
         auto it = uniques_.insert(n);
         if (!it.second) {
@@ -26,16 +34,11 @@ public:
     }
 
     void pop() { s_.pop(); }
-    std::shared_ptr<T>& top() { s_.top(); }
-    auto unique_items() { return uniques_; }
+    std::shared_ptr<T>& top() { return s_.top(); }
+	std::set<std::shared_ptr<T>, cmp> unique_items() { return uniques_; }
 
 private:
-    struct cmp {
-        bool operator()(const std::shared_ptr<T>& a,
-                        const std::shared_ptr<T>& b) {
-            return *a < *b;
-        }
-    };
+
     std::set<std::shared_ptr<T>, cmp> uniques_;
     std::stack<std::shared_ptr<T>> s_;
 };
@@ -53,7 +56,7 @@ public:
     explicit node(node&& n)
         : t_(std::move(n.t_)),
           left_(std::move(n.left_)),
-          right_(std::move(n.right_)) {}
+          right_(std::move(n.right_))  {}
     node() = delete;
 
     bool operator<(const node& n) const {
@@ -83,8 +86,8 @@ public:
 
     void add_parent(const std::shared_ptr<node>& p) { parents_.push_back(p); }
 
-    bool set_left_child(std::shared_ptr<node> lc) { left_ = lc; }
-    bool set_right_child(std::shared_ptr<node> rc) { right_ = rc; }
+    void set_left_child(std::shared_ptr<node> lc) { left_ = lc; }
+    void set_right_child(std::shared_ptr<node> rc) { right_ = rc; }
 
     const std::vector<std::shared_ptr<node>>& parents() { return parents_; }
     const std::shared_ptr<node>& left() { return left_; }
@@ -136,7 +139,44 @@ private:
 template <typename NODE>
 class expression {
 public:
-    expression(postfix&& pfx) : head_(init(std::move(pfx))) {}
+    expression(postfix&& pfx)  {
+			auto pfx_tokens = pfx.move_tokens();
+			std::list<std::shared_ptr<NODE>> nodes;
+			// move the tokens into nodes
+			for (const auto& t : pfx_tokens) {
+				nodes.push_back(std::make_shared<NODE>(std::move(*t)));
+			}
+			unique_stack<NODE> s;
+			for (auto& n : nodes) {
+				if (n->type() != token::token_type::binary_operation) {
+					// variable or constant
+					s.push(n);
+					continue;
+				}
+				auto op1 = s.top();
+				s.pop();
+				auto op2 = s.top();
+				s.pop();
+
+				op1->add_parent(n);
+				op2->add_parent(n);
+				n->set_left_child(op1);
+				n->set_right_child(op2);
+				s.push(n);
+			}
+			// Get unique nodes from the stack.
+			auto uis = s.unique_items();
+			// Add the variables (only) to a list.
+
+			for (auto n : uis) {
+				variables_.push_back(n);
+			}
+			// pop the top off, which corresponds to the head of the graph.
+
+			head_ = std::move(s.top());
+			// graph generated and unique variables obtained. Job done.
+	}
+
     double operator[](const state& s) { return head_->eval(s); }
     void print() {
         std::cout << head_ << std::endl;
@@ -145,45 +185,9 @@ public:
 
 protected:
     std::shared_ptr<NODE> head_;
-    std::list<std::shared_ptr<NODE>> variables_;
-
+	std::list<std::shared_ptr<NODE>> variables_;
 private:
-    auto init(postfix&& pfx) {
-        auto pfx_tokens = pfx.move_tokens();
-        std::list<std::shared_ptr<NODE>> nodes;
-        // move the tokens into nodes
-        for (const auto& t : pfx_tokens) {
-            nodes.push_back(std::make_shared<NODE>(std::move(*t)));
-        }
-        unique_stack<NODE> s;
-        for (auto& n : nodes) {
-            if (n->type() != token::token_type::binary_operation) {
-                // variable or constant
-                s.push(n);
-                continue;
-            }
-            auto op1 = s.top();
-            s.pop();
-            auto op2 = s.top();
-            s.pop();
-
-            op1->add_parent(n);
-            op2->add_parent(n);
-            n->set_left_child(op1);
-            n->set_right_child(op2);
-            s.push(n);
-        }
-        // Get unique nodes from the stack.
-        auto unique_items = s.unique_items();
-        // Add the variables (only) to a list.
-        for (auto&n : unique_items) {
-            std::cout << n.use_count() << std::endl;
-            variables_.push_back(n);
-        }
-        // pop the top off, which corresponds to the head of the graph.
-        return std::move(s.top());
-        // graph generated and unique variables obtained. Job done.
-    }
+    
 };
 }  // namespace base
 
