@@ -27,6 +27,7 @@ public:
 
     void pop() { s_.pop(); }
     std::shared_ptr<T>& top() { s_.top(); }
+    auto unique_items() { return uniques_; }
 
 private:
     struct cmp {
@@ -141,8 +142,10 @@ public:
         std::cout << head_ << std::endl;
         head_->print();
     }
-    
-    std::shared_ptr<NODE> get() { return head_; }
+
+protected:
+    std::shared_ptr<NODE> head_;
+    std::list<std::shared_ptr<NODE>> variables_;
 
 private:
     auto init(postfix&& pfx) {
@@ -170,10 +173,17 @@ private:
             n->set_right_child(op2);
             s.push(n);
         }
+        // Get unique nodes from the stack.
+        auto unique_items = s.unique_items();
+        // Add the variables (only) to a list.
+        for (auto&n : unique_items) {
+            std::cout << n.use_count() << std::endl;
+            variables_.push_back(n);
+        }
+        // pop the top off, which corresponds to the head of the graph.
         return std::move(s.top());
+        // graph generated and unique variables obtained. Job done.
     }
-
-    std::shared_ptr<NODE> head_;
 };
 }  // namespace base
 

@@ -48,9 +48,15 @@ auto unique_tester(const std::shared_ptr<node>& head) {
     return nodes;
 }
 
+class test_expression : public base::expression<node> {
+public:
+    test_expression(postfix&& pfx) : base::expression<node>(std::move(pfx)) {}
+    std::shared_ptr<node> get() { return head_; }
+};
+
 TEST(expression, unique) {
     std::string e1 = "(A+B)+A*(A+B)";
-    auto g0 = base::expression<node>(to_postfix(e1));
+    auto g0 = test_expression(to_postfix(e1));
     // gets the shared pointer of the head of the expression
     auto nodes = unique_tester(g0.get());
     node a_plus_b = node(token("+"), token("A"), token("B"));
