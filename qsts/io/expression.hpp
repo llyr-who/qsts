@@ -186,7 +186,7 @@ public:
         // graph generated and unique variables obtained. Job done.
     }
 
-    double operator[](const state& s) { return head_->eval(s); }
+    double operator[](const state& s) { return (*head_)[s]; }
     void print() {
         std::cout << head_ << std::endl;
         head_->print();

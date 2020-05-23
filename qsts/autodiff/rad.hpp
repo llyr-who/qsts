@@ -12,15 +12,28 @@ public:
     explicit node(token t) : qsts::base::node(t), grad_(0), visit_count_(0) {}
 
     void grad(const state& s) {
-		if(++visit_count_ != parents().size() && !parents().empty()) return;
+        // Do not propagate untill all parents have
+        // touched their child. I do not advocate this.
+        if (++visit_count_ < parents().size() && !parents().empty()) {
+            return;
+        }
+
+        if (visit_count_ > parents().size()) {
+            // we have now visited this node more
+            // than we should have which suggests
+            // that we want a different gradient.
+            grad_ = parents().empty() ? 1 : 0;
+            visit_count_ = 0;
+        }
+
+        // carry out grad
         if (type() == token::token_type::binary_operation) {
             if (to_string() == "*") {
                 std::static_pointer_cast<node>(left())->grad_ +=
                     grad_ * (*right())[s];
                 std::static_pointer_cast<node>(right())->grad_ +=
                     grad_ * (*left())[s];
-            }
-            else if (to_string() == "+") {
+            } else if (to_string() == "+") {
                 std::static_pointer_cast<node>(left())->grad_ += grad_;
                 std::static_pointer_cast<node>(right())->grad_ += grad_;
             }
@@ -35,7 +48,7 @@ public:
     }
 
     double grad_;
-	int visit_count_;
+    int visit_count_;
 };
 
 //! The idea here is that you generate a base expression
@@ -54,9 +67,9 @@ public:
         // fire off derivatives.
         head_->grad(s);
         // iterate through unique variables and pick out grads w.r.t each.
-		state grad = s;
+        state grad = s;
         for (const auto& v : variables_) {
-			grad[v->to_string()] = v->grad_;
+            grad[v->to_string()] = v->grad_;
         }
         return grad;
     }
