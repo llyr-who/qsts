@@ -10,9 +10,9 @@ int main() {
 
     point p({1.0, 1.0, 1.0});
 
-    double eps = 0.1;
+    double eps = 0.01;
 
-    for (std::size_t i = 0; i < 10; ++i) {
+    for (std::size_t i = 0; i < 100; ++i) {
         // set state;
         state s = {{"x", p[0]}, {"y", p[1]}, {"z", p[2]}};
         // obtain gradient at state;
