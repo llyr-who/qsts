@@ -1,9 +1,5 @@
 set(_tests
-    expression_test
-    infix_test
-    postfix_test
-    token_test
-    state_test)
+    rad_test)
 
 
 foreach(_test IN LISTS _tests)

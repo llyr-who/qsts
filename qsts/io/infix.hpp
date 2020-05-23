@@ -16,6 +16,7 @@ infix to_infix(std::string s) {
     infix ifx;
     size_t pos = 0;
     std::string t;
+    s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
     while ((pos = s.find_first_of("+-/*()")) != std::string::npos) {
         ifx.add_token(std::make_shared<token>(s.substr(0, pos)));
         ifx.add_token(std::make_shared<token>(s[pos]));
