@@ -9,10 +9,10 @@ namespace qsts {
 namespace rad {
 class node : public qsts::base::node {
 public:
-    explicit node(token t) : qsts::base::node(t), grad_(0) {}
+    explicit node(token t) : qsts::base::node(t), grad_(0), visit_count_(0) {}
 
     void grad(const state& s) {
-        std::cout << to_string() << "grad " << grad_ << std::endl; 
+		if(++visit_count_ != parents().size() && !parents().empty()) return;
         if (type() == token::token_type::binary_operation) {
             if (to_string() == "*") {
                 std::static_pointer_cast<node>(left())->grad_ +=
@@ -20,7 +20,7 @@ public:
                 std::static_pointer_cast<node>(right())->grad_ +=
                     grad_ * (*left())[s];
             }
-            if (to_string() == "+") {
+            else if (to_string() == "+") {
                 std::static_pointer_cast<node>(left())->grad_ += grad_;
                 std::static_pointer_cast<node>(right())->grad_ += grad_;
             }
@@ -35,6 +35,7 @@ public:
     }
 
     double grad_;
+	int visit_count_;
 };
 
 //! The idea here is that you generate a base expression
@@ -53,14 +54,12 @@ public:
         // fire off derivatives.
         head_->grad(s);
         // iterate through unique variables and pick out grads w.r.t each.
+		state grad = s;
         for (const auto& v : variables_) {
-            std::cout << v->to_string() << v->grad_ << std::endl;
+			grad[v->to_string()] = v->grad_;
         }
-        return 0.0;
+        return grad;
     }
-
-private:
-    std::vector<double> grads_;
 };
 
 }  // namespace rad
