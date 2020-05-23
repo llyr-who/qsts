@@ -93,6 +93,8 @@ public:
     std::shared_ptr<node>& left() { return left_; }
     std::shared_ptr<node>& right() { return right_; }
 
+    void reset_value() { v_.reset(); }
+
     double operator[](const state& s) {
         if (v_) {
             return v_.value();
@@ -134,15 +136,15 @@ public:
 
     token::token_type type() { return t_.type(); }
     const std::string& to_string() { return t_.to_string(); }
-
+    
 private:
 
     token t_;
     std::shared_ptr<node> left_;
     std::shared_ptr<node> right_;
     std::vector<std::shared_ptr<node>> parents_;
-
     std::optional<double> v_;
+
 };
 
 template <typename NODE>
@@ -186,6 +188,7 @@ public:
         // graph generated and unique variables obtained. Job done.
     }
 
+    // change this to cached operator on node!
     double operator[](const state& s) { return head_->eval(s); }
     void print() {
         std::cout << head_ << std::endl;
