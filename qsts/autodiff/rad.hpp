@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "io/expression.hpp"
 #include "io/postfix.hpp"
 #include "io/state.hpp"
@@ -28,47 +30,45 @@ public:
 
         // carry out grad
         if (type() == token::token_type::binary_operation) {
-			std::string str = to_string();
+            std::string str = to_string();
             if (str == "*") {
-				multiplication(s);
+                multiplication(s);
             } else if (str == "+") {
-				addition(s);
-			} else if (str == "/") {
-				division(s);
-			}
-			else if (str == "-") {
-				subtraction(s);
-			}
+                addition(s);
+            } else if (str == "/") {
+                division(s);
+            } else if (str == "-") {
+                subtraction(s);
+            }
             std::static_pointer_cast<node>(left())->grad(s);
             std::static_pointer_cast<node>(right())->grad(s);
             return;
         }
-		//if(type() == unary_operation) ...
-		// return
+        // if(type() == unary_operation) ...
+        // return
     }
 
+    void multiplication(const state& s) {
+        std::static_pointer_cast<node>(left())->grad_ += grad_ * (*right())[s];
+        std::static_pointer_cast<node>(right())->grad_ += grad_ * (*left())[s];
+    }
 
-	void multiplication(const state& s) {
-		std::static_pointer_cast<node>(left())->grad_ += grad_ * (*right())[s];
-		std::static_pointer_cast<node>(right())->grad_ += grad_ * (*left())[s];
-	}
+    void addition(const state& s) {
+        std::static_pointer_cast<node>(left())->grad_ += grad_;
+        std::static_pointer_cast<node>(right())->grad_ += grad_;
+    }
 
-	void addition(const state& s) {
-		std::static_pointer_cast<node>(left())->grad_ += grad_;
-		std::static_pointer_cast<node>(right())->grad_ += grad_;
-	}
+    void division(const state& s) {
+        double r = (*right())[s];
+        double l = (*left())[s];
+        std::static_pointer_cast<node>(right())->grad_ += grad_ * (1.0 / l);
+        std::static_pointer_cast<node>(left())->grad_ -= grad_ * (r / (l * l));
+    }
 
-	void division(const state& s) {
-		double r = (*right())[s];
-		double l = (*left())[s];
-		std::static_pointer_cast<node>(right())->grad_ += grad_ * (1.0 / l);
-		std::static_pointer_cast<node>(left())->grad_ -= grad_ * (r / (l*l));
-	}
-
-	void subtraction(const state& s) {
-		std::static_pointer_cast<node>(left())->grad_ -= grad_;
-		std::static_pointer_cast<node>(right())->grad_ += grad_;
-	}
+    void subtraction(const state& s) {
+        std::static_pointer_cast<node>(left())->grad_ -= grad_;
+        std::static_pointer_cast<node>(right())->grad_ += grad_;
+    }
 
     double grad_;
     int visit_count_;
@@ -92,7 +92,10 @@ public:
         // fire off derivatives. "backward pass".
         head_->grad(s);
         // iterate through unique variables and pick out grads w.r.t each.
-        state grad;
+        state grad = s;
+        for (const auto& v : grad) {
+            grad[v.first] = std::nan("0");
+        }
         for (const auto& v : variables_) {
             grad[v->to_string()] = v->grad_;
         }
