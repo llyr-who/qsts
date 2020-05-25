@@ -27,6 +27,10 @@ TEST(rad, basic) {
 	state g3 = { {"A", 2}, {"B", -1} };
 	ASSERT_EQ(e3.grad(s3), g3);
 
+    auto e4 = rad::expression("A");
+    state s4 = {{"A", 2}};
+	state g4 = { {"A", 1}};
+    ASSERT_EQ(e4.grad(s4), g4);
 }
 
 TEST(rad, grad_2d) {

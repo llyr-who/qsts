@@ -6,7 +6,7 @@ using namespace qsts;
 using point = std::array<double, 3>;
 
 int main() {
-    auto e = rad::expression("x*x+y*y+z*z");
+    auto e = rad::expression("(x+y)*x*z*(x+y)");
 
     point p({1.0, 1.0, 1.0});
 

@@ -92,7 +92,7 @@ public:
         // fire off derivatives. "backward pass".
         head_->grad(s);
         // iterate through unique variables and pick out grads w.r.t each.
-        state grad = s;
+        state grad;
         for (const auto& v : variables_) {
             grad[v->to_string()] = v->grad_;
         }
