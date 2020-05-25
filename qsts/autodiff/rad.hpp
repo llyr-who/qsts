@@ -28,24 +28,47 @@ public:
 
         // carry out grad
         if (type() == token::token_type::binary_operation) {
-            if (to_string() == "*") {
-                std::static_pointer_cast<node>(left())->grad_ +=
-                    grad_ * (*right())[s];
-                std::static_pointer_cast<node>(right())->grad_ +=
-                    grad_ * (*left())[s];
-            } else if (to_string() == "+") {
-                std::static_pointer_cast<node>(left())->grad_ += grad_;
-                std::static_pointer_cast<node>(right())->grad_ += grad_;
-            }
+			std::string str = to_string();
+            if (str == "*") {
+				multiplication(s);
+            } else if (str == "+") {
+				addition(s);
+			} else if (str == "/") {
+				division(s);
+			}
+			else if (str == "-") {
+				subtraction(s);
+			}
             std::static_pointer_cast<node>(left())->grad(s);
             std::static_pointer_cast<node>(right())->grad(s);
             return;
         }
-        if (type() == token::token_type::constant) {
-            grad_ = 0;
-            return;
-        }
+		//if(type() == unary_operation) ...
+		// return
     }
+
+
+	void multiplication(const state& s) {
+		std::static_pointer_cast<node>(left())->grad_ += grad_ * (*right())[s];
+		std::static_pointer_cast<node>(right())->grad_ += grad_ * (*left())[s];
+	}
+
+	void addition(const state& s) {
+		std::static_pointer_cast<node>(left())->grad_ += grad_;
+		std::static_pointer_cast<node>(right())->grad_ += grad_;
+	}
+
+	void division(const state& s) {
+		double r = (*right())[s];
+		double l = (*left())[s];
+		std::static_pointer_cast<node>(right())->grad_ += grad_ * (1.0 / l);
+		std::static_pointer_cast<node>(left())->grad_ -= grad_ * (r / (l*l));
+	}
+
+	void subtraction(const state& s) {
+		std::static_pointer_cast<node>(left())->grad_ -= grad_;
+		std::static_pointer_cast<node>(right())->grad_ += grad_;
+	}
 
     double grad_;
     int visit_count_;

@@ -107,7 +107,13 @@ public:
         if (t_.type() == token::token_type::binary_operation) {
             if (t_.to_string() == "+") return right_->eval(s) + left_->eval(s);
             if (t_.to_string() == "-") return right_->eval(s) - left_->eval(s);
-            if (t_.to_string() == "/") return right_->eval(s) / left_->eval(s);
+			if (t_.to_string() == "/") {
+				double z;
+				if ((z = left_->eval(s)) == 0.0) {
+					throw std::invalid_argument("dividing by zero!");
+				}
+				return right_->eval(s) / left_->eval(s);
+			};
             if (t_.to_string() == "*") return right_->eval(s) * left_->eval(s);
             return 0;
         }
@@ -188,8 +194,13 @@ public:
         // graph generated and unique variables obtained. Job done.
     }
 
-    // change this to cached operator on node!
-    double operator[](const state& s) { return head_->eval(s); }
+	//! Evaluates the expression. Note that we do not utilise the 
+	//! cached evaluation functionality present in the node class.
+	//! This is quite simply because it provides no real advantage
+	//! if we are just evaluating an expression.
+    double operator[](const state& s) {
+		return head_->eval(s);
+	}
     void print() {
         std::cout << head_ << std::endl;
         head_->print();

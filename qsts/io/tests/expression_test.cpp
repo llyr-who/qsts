@@ -29,8 +29,8 @@ TEST(unique_stack, basic) {
 }
 
 TEST(expression, eval) {
-    std::string e1 = "(A+B)+A*(A+B)";
-    auto g0 = base::expression<node>(std::move(to_postfix(e1)));
+    std::string e0 = "(A+B)+A*(A+B)";
+    auto g0 = base::expression<node>(std::move(to_postfix(e0)));
     qsts::state s0 = {{"A", 2.0}, {"B", 1.0}};
     qsts::state s1 = {{"A", 2.0}, {"B", 2.0}};
     qsts::state s2 = {{"A", 2.0}, {"B", 0.0}};
@@ -41,6 +41,29 @@ TEST(expression, eval) {
     ASSERT_EQ(g0[s2], 6.0);
     ASSERT_EQ(g0[s3], 0.0);
     ASSERT_EQ(g0[s4], 4.0);
+
+	std::string e1 = "(A/B)";
+	auto g1 = base::expression<node>(std::move(to_postfix(e1)));
+	ASSERT_EQ(g1[s0], 2.0);
+	ASSERT_EQ(g1[s1], 1.0);
+	try {
+		ASSERT_EQ(g1[s2], 0.0);
+		ASSERT_TRUE(false);
+	}
+	catch (std::invalid_argument & e) {
+		ASSERT_TRUE(true);
+	}
+	ASSERT_EQ(g1[s3], -1.0);
+	ASSERT_EQ(g1[s4], 1.0);
+
+	std::string e2 = "A - B";
+	auto g2 = base::expression<node>(std::move(to_postfix(e2)));
+	ASSERT_EQ(g2[s0], 1.0);
+	ASSERT_EQ(g2[s1], 0.0);
+	ASSERT_EQ(g2[s2], 2.0);
+	ASSERT_EQ(g2[s3], -2.0);
+	ASSERT_EQ(g2[s4], 0.0);
+
 }
 
 void fill_count_map(std::map<std::shared_ptr<node>, int>& nodes,

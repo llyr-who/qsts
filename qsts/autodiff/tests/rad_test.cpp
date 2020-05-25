@@ -16,6 +16,17 @@ TEST(rad, basic) {
     state s1 = {{"A", 2}, {"B", 1}};
     state g1 = {{"A", 2}, {"B", 4}};
     ASSERT_EQ(e1.grad(s1), g1);
+
+	auto e2 = rad::expression("A/B");
+	state s2 = { {"A", 1.0}, {"B", 2.0} };
+	state g2 = { {"A", 0.5}, {"B", -0.25} };
+	ASSERT_EQ(e2.grad(s2), g2);
+
+	auto e3 = rad::expression("2*A-B");
+	state s3 = { {"A", 2}, {"B", 1} };
+	state g3 = { {"A", 2}, {"B", -1} };
+	ASSERT_EQ(e3.grad(s3), g3);
+
 }
 
 TEST(rad, grad_2d) {
