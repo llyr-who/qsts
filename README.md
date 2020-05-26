@@ -11,4 +11,5 @@ To build :
 To test :
 `make test`
 
+See my blog post on this [here](https://downandoutinswansea.blogspot.com/2020/05/the-magic-behind-deep-learning.html)
 
